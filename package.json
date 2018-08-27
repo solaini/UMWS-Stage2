@@ -1,0 +1,42 @@
+{
+  "name": "stage1-grid",
+  "version": "1.1.0",
+  "description": "Stage 1 Project UMWS",
+  // "private": true,
+  "main": "/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "~0.6.0",
+    "grunt-contrib-copy": "~0.8.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-contrib-uglify": "~0.5.0",
+    "grunt-mkdir": "~0.1.2",
+    "gulp": "^4.0.0",
+    "gulp-autoprefixer": "^5.0.0"
+  },
+  "dependencies": {
+    "browser-sync": "^2.24.6",
+    "grunt-responsive-images": "^0.1.6",
+    "gulp-browserify": "^0.5.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-eslint": "^5.0.0",
+    "gulp-uglify": "^3.0.1",
+    "idb": "^2.1.3",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solaini/stage1-grids.git"
+  },
+  "author": "Alex Coffin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/solaini/stage1-grids/issues"
+  },
+  "homepage": "https://github.com/solaini/stage1-grids#readme"
+}
