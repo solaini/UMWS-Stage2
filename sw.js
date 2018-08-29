@@ -6,7 +6,7 @@ found at: https://developers.google.com/web/fundamentals/primers/service-workers
 //import idb from 'idb';
 
 
-let reviewCache = 'stage2-v2';
+let reviewCache = 'stage2-v8';
 
 //Adding IndexedDB files to main.js
 // const dbPromise = idb.open('resaurants-v1', 1, function(upgradeDb) {
@@ -55,6 +55,12 @@ self.addEventListener('activate', function(event){
 });
 
 self.addEventListener('fetch', function(event){
+    //Don't cache any data from restaurants/reviews
+    if (event.request.url.includes("/restaurants/") || event.request.url.includes("/reviews/")) {
+        event.respondWith(fetch(event.request, {cache: "no-store"}));
+        return;
+    }
+    
     event.respondWith(
         caches.match(event.request).then(function(response){
             //Returns repsonse if cache is found
