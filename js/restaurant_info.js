@@ -98,6 +98,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
+  console.log(`Reached Reviews comment for ${restaurant.name}`);
   // fill reviews
   fillReviewsHTML();
 }
