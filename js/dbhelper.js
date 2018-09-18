@@ -71,7 +71,11 @@ class DBHelper {
    * Changed this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
-    return 'http://localhost:1337/restaurants';
+    return `http://localhost:1337/restaurants`;
+  }
+
+  static get DATABASE_REVIEWS(){
+    return `http://localhost:1337/reviews`;
   }
 
   /**
@@ -211,7 +215,9 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph}.jpg`);
+    if (restaurant.photograph){
+      return (`/img/${restaurant.photograph}.jpg`);
+    }
   }
 
   /**

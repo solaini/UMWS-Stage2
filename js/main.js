@@ -162,11 +162,12 @@ createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
-  if(!DBHelper.imageUrlForRestaurant(restaurant)){
+  if(!restaurant.photograph){
     console.log(`Image for ${restaurant.name} not found!`)
+    image.src = `/img/10.jpg`;
   }else{
     image.src = DBHelper.imageUrlForRestaurant(restaurant);
-    console.log(`Image for ${restaurant.name} not found.`)
+    console.log(`Image for ${restaurant.name} found.`)
   }
   image.alt = restaurant.name;
   li.append(image);
