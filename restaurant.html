@@ -49,18 +49,17 @@
     <section id="reviews-container">
       <ul id="reviews-list"></ul>
     </section>
-    <section>
-    <form id="create-review" method="post" action="/" name="" accept-charset="UTF-8">
+    <section id="create-review">
         <div>
-          <label for="Name">
+          <label for="name">
             <span class="label-text">Name</span>
-            <input type="text" id="reviewName">
+            <input type="text" id="name">
           </label>
         </div>
         <div>
           <label for="Dropdown Rating">
           <span class="label-text">Rating</span>
-          <select>
+          <select id="rating">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -72,11 +71,10 @@
         <div>
           <label for="Comments">
             <span class="label-text">Comments</span>
-            <textarea rows="4" cols="50" id="comment">What do you think of this restaurant?</textarea>
+            <textarea rows="4" cols="50" id="comments"></textarea>
           </label>
           <button id="reviewButton" onclick="saveReview()">Submit Review</button>
         </div>
-    </form>
   </section>
     <!-- End reviews -->
   </main>
@@ -95,6 +93,8 @@
   <script type="text/javascript" src="js/dbhelper.js"></script>
   <!-- Main javascript file -->
   <script type="text/javascript" src="js/restaurant_info.js"></script>
+  <!-- Load Action location for form -->
+
   <!-- Google Maps -->
  <!--  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_tKbW6A5pQ-eupxI56myUnHLqYCzOjKo&libraries=places&callback=initMap"></script> -->
   <!-- End scripts -->

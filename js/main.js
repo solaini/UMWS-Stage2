@@ -209,11 +209,14 @@ createRestaurantHTML = (restaurant) => {
 
 //Handle click events for specific restaurant to save if it is a favorite or not.
 const handleFavorite = (id, status) => {
-  const fav = document.getElementById("favorite-icon" + id);
+  const fav = document.getElementById("favorite-icon-" + id);
+  console.log(fav);
   const restaurant = self.restaurants.filter(f => f.id === id)[0];
-  if (!restaurant) return;
-  restaurant["is_favorite"] = status;
+  restaurant["is_favorite"] = !restaurant["is_favorite"];
+  fav.innerHTML = restaurant["is_favorite"] ? `&#9733` : `&#9734`;
+  console.log(restaurant["is_favorite"]);
   fav.onclick = event => handleFavorite(restaurant.id, !restaurant["is_favorite"]);
+  
 }
 
 
@@ -232,16 +235,7 @@ addMarkersToMap = (restaurants = self.restaurants) => {
   });
 
 } 
-/* addMarkersToMap = (restaurants = self.restaurants) => {
-  restaurants.forEach(restaurant => {
-    // Add marker to the map
-    const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
-    google.maps.event.addListener(marker, 'click', () => {
-      window.location.href = marker.url
-    });
-    self.markers.push(marker);
-  });
-} */
+
 
 //Registers Service Worker on the pages
 if(navigator.serviceWorker){
@@ -252,37 +246,3 @@ if(navigator.serviceWorker){
 });
 }
 
-
-
-
-// dbPromise.then(function(db){
-//     var tx = db.transaction('keyval');
-//     var keyValStore = tx.objectStore('keyval');
-//     return keyValStore.get('hello');
-// }).then(val => console.log(`The value of hello is ${val}`));
-
-
-// dbPrimise.then(function(db) {
-//     var tx = db.transaction('keyval', 'readwrite');
-//     var keyValStore = tx.objectStore('keyval');
-//     keyValStore.put('bar', 'foo');
-//     return tx.complete;
-// }).then(function(){
-//     console.log(`Added foo:bar to keyval`);
-// });
-
-// dbPromise.then(function(db){
-//     var tx = db.transaction('restaurant', 'readwrite');
-//     var restaurantStore = tx.objectStore('restaurant');
-
-//     restaurantStore.put({
-//         name: restaurant.name,
-//         image: image.src,
-//         neighborhood: restaurant.neighborhood,
-//         address: restaurant.address
-//     });
-
-//     return tx.complete;
-// }).then(function(){
-//     console.log(`Restaurant ${restaurant.name} stored successfully.`);
-// })

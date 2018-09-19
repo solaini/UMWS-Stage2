@@ -148,8 +148,8 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  const dateConvert = review.createAt;
-  date.innerHTML = new Date(dateConvert).toLocaleDateString();
+  const dateRaw= review.createdAt; 
+  date.innerHTML = new Date(dateRaw).toLocaleDateString();
   li.appendChild(date);
 
   const rating = document.createElement('p');
@@ -187,4 +187,19 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+
+//Save review to DB and to the server
+const saveReview = () => {
+  
+  const name = document.getElementById("name").value;
+  const rating = document.getElementById("rating").value;
+  const comments = document.getElementById("comments").value;
+  console.log(`${name} gave the restaurant review a ${rating}.`)
+  DBHelper.newReview(self.restaurant.id, name, rating, comments, (error, review) => {
+    if(error){
+      console.log(`Error saving review to DB: ${error}`)
+    }
+  });
 }

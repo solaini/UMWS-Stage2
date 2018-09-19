@@ -1,35 +1,36 @@
-//IndexedDB functions
-const dbFunc = (function(){
-  'use strict';
+//Common database helper functions to control input and output of different data sets.
 
-  //check for support
-  if (!('indexedDB' in window)) {
-    console.log('This browser doesn\'t support IndexedDB');
-    return;
-  }
 
+  //Function to retrieve the data for each restaurant from the DB
   const dbPromise = idb.open('restaurants-v2', 1, function(upgradeDb) {
     console.log(`Working on adding information`);
     switch(upgradeDb.oldVersion){
       case 0:
          upgradeDb.createObjectStore('restaurants', {keyPath: "id"});
-         addData();
-    //   case 1:
-    //     const updateReviews = upgradeDb.createObjectStore("reviews", {keyPath: "id"});
-    //     updateReviews.createIndex("restaurant_id", "restaurant_id");
-    //     saveReview();
+         DBHelper.addRestaurants();
+         DBHelper.addReviews();
+      case 1:
+        const updateReviews = upgradeDb.createObjectStore("reviews", {keyPath: "id"});
+        updateReviews.createIndex("restaurant_id", "restaurant_id");
       }
   });
 
 
+/**
+ * Common database helper functions.
+ */
+class DBHelper {
+  
+
+
   //Add Data to IDB Index
-  function addData(){
+  static addRestaurants(){
     fetch(DBHelper.DATABASE_URL)
     .then(function (response) {
       return response.json();
       })
     .then (function(restaurants){
-      dbPromise.then(function (db) {
+      dbPromise.then( db => {
         var tx = db.transaction('restaurants', 'readwrite');
         var store = tx.objectStore('restaurants');
         restaurants.forEach(function (restaurant) {
@@ -43,27 +44,44 @@ const dbFunc = (function(){
       });   
   };
 
-  // function saveReview(){
-  //   fetch(DATABASE_REVIEWS)
-  //   .then(response => response.json())
-  //   .then(review => {
-  //     dbPromise.then(function (db) {
-  //       var tx = db.transaction('reviews', 'readwrite');
-  //       var store = tx.objectStore('reviews');
-  //       return Promise.all(review.map(function(rev) {
-  //         return store.add(rev);
-  //       }))
-  //       .catch(function(e){
-  //         tx.abort();
-  //         console.log(`Error adding reviews: ${e}`)
-  //       }).then(console.log(`New review added.`))
-  //     })
-  //   })
-  //}
+  static addReviews(){
+    fetch(DBHelper.DATABASE_REVIEWS)
+    .then(function(response){
+      return response.json();
+    }).then(function(restaurants){
+      dbPromise.then(db => {
+          const tx = db.transaction("reviews", "readwrite");
+          const store = tx.objectStore("reviews");
+          data.forEach(review => {
+            store.put({id: review.id, "restaurant_id": review["restaurant_id"], data: review});
+          })
+      });
+      callback(null, reviews);
+      }).catch(function (err) {
+        const error = (`${err}: Issue storing Data.`);
+      });   
+  };
 
+
+
+  //Add the new review to the local cache.
+  static updateCachedReviews(id, body){
+    dbPromise.then(db => {
+      const tx = db.transaction("reviews", "readwrite");
+      const store =  tx.objectStore("reviews");
+      console.log("Adding review to cache store");
+      store.put({
+        id: Date.now(),
+        "restaurant_id": id,
+        data: body
+      })
+      console.log(`Completed storing the new review`);
+      return tx.complete;
+    })
+  }
 
   //Retrieve data from IDB index
-  function getData() {
+  static getData() {
     return dbPromise.then(function(db){
       var tx = db.transaction('restaurants', 'readonly');
       var store = tx.objectStore('restaurants');
@@ -71,22 +89,7 @@ const dbFunc = (function(){
     });
   }
 
-  return {
-    dbPromise: (dbPromise),
-    addData: (addData),
-    getData: (getData)
-  };
-})();
 
-
-  //Function to retrieve the data for each restaurant from the DB
-  
-
-
-/**
- * Common database helper functions.
- */
-class DBHelper {
 
   /**
    * Database URL.
@@ -106,7 +109,7 @@ class DBHelper {
   static fetchRestaurants(callback) {
     
     //Check DB for information and then fetch data from server
-    dbFunc.getData().then(function(restaurants){
+    DBHelper.getData().then(function(restaurants){
       return restaurants;
     });
 
@@ -277,6 +280,30 @@ class DBHelper {
   // static updateFav(id, status, callback){
   //   const url = ``
   // }
+
+  static newReview(id, name, rating, comments, callback) {
+    const body = {
+      restaurant_id: id,
+      name: name,
+      rating: rating,
+      comments: comments
+    }
+    const param = {
+      body: JSON.stringify(body),
+      method: "POST"
+    }
+
+    const url = `${DBHelper.DATABASE_REVIEWS}`;
+    const method = "POST";
+    DBHelper.updateCachedReviews(id, body);
+    
+    fetch(DBHelper.DATABASE_REVIEWS, param).then(data =>{ return data.json()})
+    .then(res => console.log(res))
+    .catch(e => console.log(e));
+
+    callback(null, null);
+
+  }
   
 
 }

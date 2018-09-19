@@ -6,7 +6,7 @@ found at: https://developers.google.com/web/fundamentals/primers/service-workers
 //import idb from 'idb';
 //Generates a random reviewCache value for updates
 let cacheValue = Math.floor(Math.random() * 10000);
-let reviewCache = `Stage3-${cacheValue}`;
+let reviewCache = `stage3-${cacheValue}`;
 console.log(reviewCache);
 // let reviewCache = 'stage2-v8';
 
@@ -47,7 +47,7 @@ self.addEventListener('activate', function(event){
         caches.keys().then(function(cacheNames){
             return Promise.all(
                 cacheNames.filter(function(cacheName){
-                    return cacheName.startsWith('stage1-') && cacheName != reviewCache;
+                    return cacheName.startsWith('stage3-') && cacheName != reviewCache;
         }).map(function(cacheName) {
             return caches.delete(cacheName);
             })
