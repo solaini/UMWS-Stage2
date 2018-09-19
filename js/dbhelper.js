@@ -14,7 +14,11 @@ const dbFunc = (function(){
       case 0:
          upgradeDb.createObjectStore('restaurants', {keyPath: "id"});
          addData();
-    }
+    //   case 1:
+    //     const updateReviews = upgradeDb.createObjectStore("reviews", {keyPath: "id"});
+    //     updateReviews.createIndex("restaurant_id", "restaurant_id");
+    //     saveReview();
+      }
   });
 
 
@@ -38,6 +42,24 @@ const dbFunc = (function(){
         const error = (`${err}: Issue storing Data.`);
       });   
   };
+
+  // function saveReview(){
+  //   fetch(DATABASE_REVIEWS)
+  //   .then(response => response.json())
+  //   .then(review => {
+  //     dbPromise.then(function (db) {
+  //       var tx = db.transaction('reviews', 'readwrite');
+  //       var store = tx.objectStore('reviews');
+  //       return Promise.all(review.map(function(rev) {
+  //         return store.add(rev);
+  //       }))
+  //       .catch(function(e){
+  //         tx.abort();
+  //         console.log(`Error adding reviews: ${e}`)
+  //       }).then(console.log(`New review added.`))
+  //     })
+  //   })
+  //}
 
 
   //Retrieve data from IDB index
@@ -74,8 +96,8 @@ class DBHelper {
     return `http://localhost:1337/restaurants`;
   }
 
-  static get DATABASE_REVIEWS(){
-    return `http://localhost:1337/reviews`;
+  static get DATABASE_REVIEWS() {
+    return `http://localhost:1337/reviews/`;
   }
 
   /**
@@ -113,6 +135,7 @@ class DBHelper {
       }
     });
   }
+
 
   /**
    * Fetch restaurants by a cuisine type with proper error handling.
@@ -233,6 +256,27 @@ class DBHelper {
       marker.addTo(newMap);
     return marker;
   } 
+
+  //Fetch Reviews by restaurant ID
+  static fetchReviews(id, callback) {
+    const fetchURL = `${DBHelper.DATABASE_REVIEWS}?restaurant_id=${id}`;
+    fetch(fetchURL, {method: "GET"})
+    .then(response => {
+      if (!response.clone().ok && !response.clone().redirected) {
+        throw "No reviews available";
+    } response.json()
+    .then(review => {
+      //console.log(review);
+      callback(null, review)
+    }
+    )})
+    .catch(error => callback(error, null));
+  }
+
+
+  // static updateFav(id, status, callback){
+  //   const url = ``
+  // }
   
 
 }

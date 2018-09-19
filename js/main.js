@@ -176,6 +176,19 @@ createRestaurantHTML = (restaurant) => {
   name.innerHTML = restaurant.name;
   li.append(name);
 
+  //Add favorite Button to the main screen.
+  console.log(restaurant["is_favorite"]);
+  const isFavorite = (restaurant["is_favorite"] && restaurant["is_favorite"].toString() === "true") ? true : false;
+  // const favorite = document.createElement('div');
+  const favorite = document.createElement('button');
+  favorite.className = "favorite-icon";
+  favorite.innerHTML = isFavorite ? `&#9733` : `&#9734`;
+  const ariaFav = isFavorite ? `${restaurant.name} is a favorite.` : `${restaurant.name} is not a favorite.`;
+  favorite.setAttribute('aria-label', ariaFav);
+  favorite.id = "favorite-icon-" + restaurant.id;
+  favorite.onclick = event => handleFavorite(restaurant.id, !isFavorite);
+  li.append(favorite);
+
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
   li.append(neighborhood);
@@ -193,6 +206,16 @@ createRestaurantHTML = (restaurant) => {
 
   return li
 }
+
+//Handle click events for specific restaurant to save if it is a favorite or not.
+const handleFavorite = (id, status) => {
+  const fav = document.getElementById("favorite-icon" + id);
+  const restaurant = self.restaurants.filter(f => f.id === id)[0];
+  if (!restaurant) return;
+  restaurant["is_favorite"] = status;
+  fav.onclick = event => handleFavorite(restaurant.id, !restaurant["is_favorite"]);
+}
+
 
 /**
  * Add markers for current restaurants to the map.

@@ -35,21 +35,7 @@ initMap = () => {
   });
 }  
  
-/* window.initMap = () => {
-  fetchRestaurantFromURL((error, restaurant) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
-      self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
-        center: restaurant.latlng,
-        scrollwheel: false
-      });
-      fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-    }
-  });
-} */
+
 
 /**
  * Get current restaurant from page URL.
@@ -100,7 +86,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   console.log(`Reached Reviews comment for ${restaurant.name}`);
   // fill reviews
-  fillReviewsHTML();
+  DBHelper.fetchReviews(restaurant.id, fillReviewsHTML);
+  // fillReviewsHTML();
 }
 
 /**
@@ -123,15 +110,19 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
   }
 }
 
-/**
- * Create all reviews HTML and add them to the webpage.
- */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+
+fillReviewsHTML = (error, reviews) => {
+  self.restaurant.reviews = reviews;
+  if(error) {
+    console.log(`Error getting reviews: ${error}`);
+  }
+  
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
 
+  console.log(reviews);
   if (!reviews) {
     const noReviews = document.createElement('p');
     noReviews.innerHTML = 'No reviews yet!';
@@ -145,6 +136,8 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   container.appendChild(ul);
 }
 
+
+
 /**
  * Create review HTML and add it to the webpage.
  */
@@ -155,7 +148,8 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = review.date;
+  const dateConvert = review.createAt;
+  date.innerHTML = new Date(dateConvert).toLocaleDateString();
   li.appendChild(date);
 
   const rating = document.createElement('p');

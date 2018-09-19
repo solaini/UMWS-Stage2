@@ -238,6 +238,29 @@ nav h1 a {
   text-transform: uppercase;
 	width: 90%;
 }
+
+/*Favorite button styling*/
+/* #restaurants-list li button {
+  background-color: #a85900;
+  border-bottom: 3px solid #eee;
+  color: #f0f0f0;
+  display: inline-block;
+  font-size: 14px;
+  margin: 15px 0 0;
+  padding: 8px 30px 10px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+} */
+
+.favorite-icon{
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+
 #restaurant-container, #reviews-container {
   border-bottom: 1px solid #d9d9d9;
   border-top: 1px solid #fff;
@@ -245,7 +268,7 @@ nav h1 a {
   width: 50%;
 }
 #reviews-container {
-  padding: 30px 40px 80px;
+  padding: 30px 40px 30px;
 }
 #reviews-container h2 {
   color: #f58500;
@@ -275,6 +298,19 @@ nav h1 a {
 #restaurant-hours td {
   color: #666;
 }
+
+#create-review{
+  padding-bottom: 100px;
+  padding-left: 20px;
+  padding-top: 10px;
+}
+
+#create-review label span{
+  display: block;
+}
+
+
+
 
 /* Responsive Sizing for mobile solutions with breakpoints*/
 @media screen and (max-width: 780px){
