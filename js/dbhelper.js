@@ -297,9 +297,6 @@ static pushServerfromCache()
   }
 
 
-  // static updateFav(id, status, callback){
-  //   const url = ``
-  // }
 
   static newReview(id, name, rating, comments, callback) {
     const body = {

@@ -3,21 +3,15 @@
 Updates to fetch event are leveraging code from Google's website on the service worker
 found at: https://developers.google.com/web/fundamentals/primers/service-workers/
 */
-//import idb from 'idb';
+
+
 //Generates a random reviewCache value for updates
 let cacheValue = Math.floor(Math.random() * 10000);
 let reviewCache = `stage3-${cacheValue}`;
 console.log(reviewCache);
 // let reviewCache = 'stage2-v8';
 
-//Adding IndexedDB files to main.js
-// const dbPromise = idb.open('resaurants-v1', 1, function(upgradeDb) {
-//   console.log(`Working on adding information`);
-//   switch(upgradeDb.oldVersion){
-//     case 0:
-//        upgradeDb.createObjectStore('restaurants', {keyPath: "id"});
-//   }
-// });
+
 
 
 
