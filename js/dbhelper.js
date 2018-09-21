@@ -82,7 +82,7 @@ class DBHelper {
       })
       console.log(`Completed storing the new review`);
       return tx.complete;
-    })
+    });
   }
 
   //Retrieve data from IDB index
@@ -108,8 +108,10 @@ class DBHelper {
     .catch(e => console.log(`Error: ${e}`))
   }
 
-//Update Server from Cache when network is restored
-static pushServerfromCache()
+  //Update Server from Cache when network is restored
+  // static pushServerfromCache(){
+
+  // }
 
   /**
    * Database URL.
@@ -318,26 +320,26 @@ static pushServerfromCache()
 
   }
   
-//update Favorite restaurant state
-static updateFavorite(id, status){
-  const url = `${DBHelper.DATABASE_URL}/${id}/?is_favorite=${status}`;
-  const param = {method: "PUT"};
-  // DBHelper.updateCachedFavorites(id, {"is_favorite": status});
-  DBHelper.updatedServer(url, param);
-  //DBHelper.addPending(url, param);
+  //update Favorite restaurant state
+  static updateFavorite(id, status){
+    const url = `${DBHelper.DATABASE_URL}/${id}/?is_favorite=${status}`;
+    const param = {method: "PUT"};
+    // DBHelper.updateCachedFavorites(id, {"is_favorite": status});
+    DBHelper.updatedServer(url, param);
+    //DBHelper.addPending(url, param);
 }
 
-//Send Fetch call to Post or Put
-static updatedServer(url, param){
-  fetch(url, param)
-  .then(DBHelper.catchOffline(url, param))
-  .then(data => data.json())
-  //.then(res => console.log(`Request successful with: ${res}`))
-  .catch(e => console.log(`Error Thrown; ${e}`));
-}
+  //Send Fetch call to Post or Put
+  static updatedServer(url, param){
+    fetch(url, param)
+    .then(DBHelper.catchOffline(url, param))
+    .then(data => data.json())
+    //.then(res => console.log(`Request successful with: ${res}`))
+    .catch(e => console.log(`Error Thrown; ${e}`));
+  }
 
-//Look for error codes in response if Server is offline
-static catchOffline(response, url, param){
+  //Look for error codes in response if Server is offline
+  static catchOffline(response, url, param){
     if (response.status >= 400){
       console.log(`Add update to pending queue.`)
       DBHelper.addPending(url, param);
