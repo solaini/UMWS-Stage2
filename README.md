@@ -2,6 +2,9 @@
 ---
 #### _Three Stage Course Material Project - Restaurant Reviews_
 
+### Working on Stage 3 to complete the course!  Need to add a favorites button, create a form submission for a review and then optimize the page performance.
+
+
 ## Project Overview: Stage 1
 
 For the **Restaurant Reviews** projects, you will incrementally convert a static webpage to a mobile-ready web application. In **Stage One**, you will take a static design that lacks accessibility and convert the design to be responsive on different sized displays and accessible for screen reader use. You will also add a service worker to begin the process of creating a seamless offline experience for your users.
