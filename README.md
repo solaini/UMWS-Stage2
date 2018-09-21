@@ -2,7 +2,7 @@
 ---
 #### _Three Stage Course Material Project - Restaurant Reviews_
 
-### Working on Stage 3 to complete the course!  Need to add a favorites button, create a form submission for a review and then optimize the page performance.
+## Working on Stage 3 to complete the course!  Need to add a favorites button, create a form submission for a review and then optimize the page performance.
 
 
 ## Project Overview: Stage 1
