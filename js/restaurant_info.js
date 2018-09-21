@@ -202,4 +202,5 @@ const saveReview = () => {
       console.log(`Error saving review to DB: ${error}`)
     }
   });
+  window.location.href = `/restaurant.html?id=${self.restaurant.id}`;
 }

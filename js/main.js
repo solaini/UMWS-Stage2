@@ -163,11 +163,11 @@ createRestaurantHTML = (restaurant) => {
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   if(!restaurant.photograph){
-    console.log(`Image for ${restaurant.name} not found!`)
+    //console.log(`Image for ${restaurant.name} not found!`)
     image.src = `/img/10.jpg`;
   }else{
     image.src = DBHelper.imageUrlForRestaurant(restaurant);
-    console.log(`Image for ${restaurant.name} found.`)
+    //console.log(`Image for ${restaurant.name} found.`)
   }
   image.alt = restaurant.name;
   li.append(image);
@@ -177,9 +177,7 @@ createRestaurantHTML = (restaurant) => {
   li.append(name);
 
   //Add favorite Button to the main screen.
-  console.log(restaurant["is_favorite"]);
   const isFavorite = (restaurant["is_favorite"] && restaurant["is_favorite"].toString() === "true") ? true : false;
-  // const favorite = document.createElement('div');
   const favorite = document.createElement('button');
   favorite.className = "favorite-icon";
   favorite.innerHTML = isFavorite ? `&#9733` : `&#9734`;
@@ -215,7 +213,7 @@ const handleFavorite = (id, status) => {
   restaurant["is_favorite"] = !restaurant["is_favorite"];
   fav.innerHTML = restaurant["is_favorite"] ? `&#9733` : `&#9734`;
   console.log(restaurant["is_favorite"]);
-  fav.onclick = event => handleFavorite(restaurant.id, !restaurant["is_favorite"]);
+  DBHelper.updateFavorite(restaurant.id, restaurant["is_favorite"])
   
 }
 

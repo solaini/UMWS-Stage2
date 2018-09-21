@@ -2,16 +2,21 @@
 
 
   //Function to retrieve the data for each restaurant from the DB
-  const dbPromise = idb.open('restaurants-v2', 1, function(upgradeDb) {
+  const dbPromise = idb.open('udacity-restaurants', 3, function(upgradeDb) {
     console.log(`Working on adding information`);
     switch(upgradeDb.oldVersion){
       case 0:
          upgradeDb.createObjectStore('restaurants', {keyPath: "id"});
          DBHelper.addRestaurants();
-         DBHelper.addReviews();
       case 1:
         const updateReviews = upgradeDb.createObjectStore("reviews", {keyPath: "id"});
         updateReviews.createIndex("restaurant_id", "restaurant_id");
+        DBHelper.addReviews();
+      case 2:
+        upgradeDb.createObjectStore("pending", {
+          keyPath: "id",
+          autoIncrement: true
+        });
       }
   });
 
@@ -48,17 +53,17 @@ class DBHelper {
     fetch(DBHelper.DATABASE_REVIEWS)
     .then(function(response){
       return response.json();
-    }).then(function(restaurants){
+    }).then(function(reviews){
       dbPromise.then(db => {
           const tx = db.transaction("reviews", "readwrite");
           const store = tx.objectStore("reviews");
-          data.forEach(review => {
+          reviews.forEach(review => {
             store.put({id: review.id, "restaurant_id": review["restaurant_id"], data: review});
           })
       });
       callback(null, reviews);
       }).catch(function (err) {
-        const error = (`${err}: Issue storing Data.`);
+        console.log(`${err}: Issue storing Data.`);
       });   
   };
 
@@ -80,8 +85,18 @@ class DBHelper {
     })
   }
 
+  //Update Cached favorites
+  // static updateCachedFavorites(id, update){
+  //   const dbPromise = idb.open("udacity-restaurants");
+  //   dbPromise.then(db => {
+      
+  //   })
+  // }
+
+  
+
   //Retrieve data from IDB index
-  static getData() {
+  static getRestaurants() {
     return dbPromise.then(function(db){
       var tx = db.transaction('restaurants', 'readonly');
       var store = tx.objectStore('restaurants');
@@ -90,6 +105,18 @@ class DBHelper {
   }
 
 
+  //Add reviews that are not able to be sent through fetch to the pending queue
+  static addPending(url, param){
+    dbPromise.then(db => {
+      const tx = db.transaction("pending", "readwrite");
+      tx.objectStore("pending")
+      .put({
+        data: {url, param}
+      })
+      return tx.complete;
+    }).then(console.log(`pending added`))
+    .catch(e => console.log(`Error: ${e}`))
+  }
 
   /**
    * Database URL.
@@ -109,7 +136,7 @@ class DBHelper {
   static fetchRestaurants(callback) {
     
     //Check DB for information and then fetch data from server
-    DBHelper.getData().then(function(restaurants){
+    DBHelper.getRestaurants().then(function(restaurants){
       return restaurants;
     });
 
@@ -294,17 +321,49 @@ class DBHelper {
     }
 
     const url = `${DBHelper.DATABASE_REVIEWS}`;
-    const method = "POST";
     DBHelper.updateCachedReviews(id, body);
-    
-    fetch(DBHelper.DATABASE_REVIEWS, param).then(data =>{ return data.json()})
-    .then(res => console.log(res))
-    .catch(e => console.log(e));
+    DBHelper.updatedServer(url, param);
+
+    // fetch(url, param).then(data =>{ return data.json()})
+    // .then(res => console.log(res))
+    // .catch(e => console.log(e));
+
+    //TODO: Need to add in Error catch for fetch call on a 404 or 500 error that saves the review to pending
+    // fetch(DBHelper.DATABASE_REVIEWS, param).then(data =>{ return data.json()})
+    // .then(res => console.log(res))
+    // .catch(e => console.log(e));
 
     callback(null, null);
 
   }
   
+//update Favorite restaurant state
+static updateFavorite(id, status){
+  const url = `${DBHelper.DATABASE_URL}/${id}/?is_favorite=${status}`;
+  const param = {method: "PUT"};
+  // DBHelper.updateCachedFavorites(id, {"is_favorite": status});
+  DBHelper.updatedServer(url, param);
+  //DBHelper.addPending(url, param);
+}
 
+//Send Fetch call to Post or Put
+static updatedServer(url, param){
+  fetch(url, param)
+  .then(DBHelper.catchOffline(url, param))
+  .then(data => data.json())
+  //.then(res => console.log(`Request successful with: ${res}`))
+  .catch(e => console.log(`Error Thrown; ${e}`));
+}
+
+//Look for error codes in response if Server is offline
+static catchOffline(response, url, param){
+    if (response.status >= 400){
+      console.log(`Add update to pending queue.`)
+      DBHelper.addPending(url, param);
+      return;
+    }else{
+    return response;
+    }
+  }
 }
 
