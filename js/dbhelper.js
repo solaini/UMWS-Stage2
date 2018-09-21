@@ -61,7 +61,6 @@ class DBHelper {
             store.put({id: review.id, "restaurant_id": review["restaurant_id"], data: review});
           })
       });
-      callback(null, reviews);
       }).catch(function (err) {
         console.log(`${err}: Issue storing Data.`);
       });   
