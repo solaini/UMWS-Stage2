@@ -13,7 +13,7 @@ console.log(reviewCache);
 
 
 
-
+//            'package.json',
 
 
 self.addEventListener('install', function(event){
@@ -21,14 +21,16 @@ self.addEventListener('install', function(event){
     caches.open(reviewCache).then(function(cache) {
         return cache.addAll([
             '/',
-            'img/',
-            'css/styles.css',
-            '/js/',
             'index.html',
             'restaurant.html',
-            'package.json',
+            'img/',
+            'css/styles.css',
+            '/js/dbhelper.js',
+            '/js/main.js',
+            '/js/idb.js',
+            '/js/restaurant_info.js',
             'data/'
-        ]);
+        ]).catch(error => console.log(`Cache error: ${error}`));
         })
     );
 });
@@ -59,7 +61,9 @@ self.addEventListener('fetch', function(event){
     }
     
     
-    event.respondWith(caches.match(event.request, {ignoreSearch: true}).then(function (db_response) {
+    event.respondWith(caches
+        .match(event.request, {ignoreSearch: true})
+        .then(function (db_response) {
         //Returns repsonse if cache is found
         if (db_response && db_response.type === "basic") {
             console.log("found in db");
