@@ -85,16 +85,6 @@ class DBHelper {
     })
   }
 
-  //Update Cached favorites
-  // static updateCachedFavorites(id, update){
-  //   const dbPromise = idb.open("udacity-restaurants");
-  //   dbPromise.then(db => {
-      
-  //   })
-  // }
-
-  
-
   //Retrieve data from IDB index
   static getRestaurants() {
     return dbPromise.then(function(db){
@@ -117,6 +107,9 @@ class DBHelper {
     }).then(console.log(`pending added`))
     .catch(e => console.log(`Error: ${e}`))
   }
+
+//Update Server from Cache when network is restored
+static pushServerfromCache()
 
   /**
    * Database URL.
@@ -323,15 +316,6 @@ class DBHelper {
     const url = `${DBHelper.DATABASE_REVIEWS}`;
     DBHelper.updateCachedReviews(id, body);
     DBHelper.updatedServer(url, param);
-
-    // fetch(url, param).then(data =>{ return data.json()})
-    // .then(res => console.log(res))
-    // .catch(e => console.log(e));
-
-    //TODO: Need to add in Error catch for fetch call on a 404 or 500 error that saves the review to pending
-    // fetch(DBHelper.DATABASE_REVIEWS, param).then(data =>{ return data.json()})
-    // .then(res => console.log(res))
-    // .catch(e => console.log(e));
 
     callback(null, null);
 
