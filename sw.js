@@ -50,6 +50,36 @@ self.addEventListener('activate', function(event){
     )
 });
 
+// self.addEventListener('fetch', function(event){
+//     //Don't cache any data from restaurants/reviews
+//     if (event.request.url.includes("/restaurants/") || event.request.url.includes("/reviews/")) {
+//         event.respondWith(fetch(event.request, {cache: "no-store"}));
+//         return;
+//     }
+    
+//     event.respondWith(
+//         caches.match(event.request).then(function(response){
+//             //Returns repsonse if cache is found
+//             if(response) return response;
+//         const fetchRequest = event.request.clone();
+//             //console.log(response.json());
+//         return fetch(fetchRequest).then(
+//             function(response){
+//                 if(!response || response.status !== 200 || response.type !=='basic'){
+//                     return response;
+//                 }
+
+//                 let responseToCache = response.clone();
+
+//                 caches.open(reviewCache).then(function(cache){
+//                     cache.put(event.request, responseToCache);
+//                 })
+//             }
+//         )    
+//     })
+//     );
+// });
+
 self.addEventListener('fetch', function(event){
     //Don't cache any data from restaurants/reviews
     if (event.request.url.includes("/restaurants/") || event.request.url.includes("/reviews/")) {
@@ -57,28 +87,26 @@ self.addEventListener('fetch', function(event){
         return;
     }
     
-    event.respondWith(
-        caches.match(event.request).then(function(response){
-            //Returns repsonse if cache is found
-            if(response) return response;
-        const fetchRequest = event.request.clone();
-            //console.log(response.json());
-        return fetch(fetchRequest).then(
-            function(response){
-                if(!response || response.status !== 200 || response.type !=='basic'){
-                    return response;
-                }
+    
+    event.respondWith(caches.match(event.request, {ignoreSearch: true}).then(function (db_response) {
+        //Returns repsonse if cache is found
+        if (db_response && db_response.type === "basic") {
+            console.log("found in db");
+            return db_response;
+        }
+        
+        return fetch(event.request).then(function (response) {
+            console.log("made a fetch");
+            let responseToCache = response.clone();
 
-                let responseToCache = response.clone();
-
-                caches.open(reviewCache).then(function(cache){
+            caches
+                .open(reviewCache)
+                .then(function (cache) {
                     cache.put(event.request, responseToCache);
                 })
-            }
-        )    
-    })
-    );
-});
-
+            return response;
+        })
+        }));
+})
 
 

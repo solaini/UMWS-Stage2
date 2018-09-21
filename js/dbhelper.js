@@ -9,7 +9,7 @@
          upgradeDb.createObjectStore('restaurants', {keyPath: "id"});
          DBHelper.addRestaurants();
       case 1:
-        const updateReviews = upgradeDb.createObjectStore("reviews", {keyPath: "id"});
+        const updateReviews = upgradeDb.createObjectStore("reviews", {keyPath: "id", autoIncrement: true});
         updateReviews.createIndex("restaurant_id", "restaurant_id");
         DBHelper.addReviews();
       case 2:
