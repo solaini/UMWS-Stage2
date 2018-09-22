@@ -94,23 +94,69 @@ class DBHelper {
   }
 
 
+  //Get reviews
+  static getRestaurants() {
+    return dbPromise.then(function(db){
+      var tx = db.transaction('restaurants', 'readonly');
+      var store = tx.objectStore('restaurants');
+      return store.getAll();
+    });
+  }
+
   //Add reviews that are not able to be sent through fetch to the pending queue
-  static addPending(url, param){
+  //Functioning properly now, need to look into the push from dead server.
+  static addPending(id, url, param){
+    const dbPromise = idb.open('udacity-restaurants')
     dbPromise.then(db => {
       const tx = db.transaction("pending", "readwrite");
       tx.objectStore("pending")
       .put({
-        data: {url, param}
+        url: url,
+        data: {param}
       })
       return tx.complete;
-    }).then(console.log(`pending added`))
+    }).then(console.log(`Pending added`))
     .catch(e => console.log(`Error: ${e}`))
   }
 
-  //Update Server from Cache when network is restored
-  // static pushServerfromCache(){
 
-  // }
+  //Update Server from Cache when network is restored
+  static pushServerfromCache(){
+    console.log(`Function called.`);
+    //Check to see if server is connected
+    // const dbPromise = idb.open('udacity-restaurants')
+    // dbPromise.then(db => {
+    //   if(!db.createObjectStoreNames.length){
+    //     console.log("No Database available.")
+    //     db.close();
+    //     return;
+    //   }
+    
+    // const tx = db.transaction("pending", "readwrite");
+    // tx.objectStore("pending")
+    // .openCursor()
+    // .then(cursor => {
+    //   if (!cursor) {
+    //     console.log(`No data in pending.`)
+    //     return;
+    //   };
+    //   url = cursor.value.data.url;
+    //   param = cursor.value.data.param;
+    //   console.log(`Posting ${param} to ${url}`);
+    // });
+    // fetch(url, param).then(response =>{
+    //   if(!response.ok || !response.redirected){
+    //     return;
+    //     }
+    //   }).then(() => {
+    //     const xr = db.transaction("pending", "readwrite");
+    //     xr.objectStore("pending").openCursor().then(cursor => {
+    //       cursor.delete().then(() => callback();
+    //     })
+    //   })
+    // .catch(e => console.log(`Error Thrown: ${e}`));
+    // });
+  }
 
   /**
    * Database URL.
@@ -283,6 +329,13 @@ class DBHelper {
 
   //Fetch Reviews by restaurant ID
   static fetchReviews(id, callback) {
+    //TODO: Set fetchREviews to pull from db if no connections 
+    //return dbPromise.then(db => {
+    //   var tx = db.transaction('reviews', 'readonly');
+    //   var store = tx.objectStore('restaurant_id');
+    //   return store.getAll(1);
+    // });
+
     const fetchURL = `${DBHelper.DATABASE_REVIEWS}?restaurant_id=${id}`;
     fetch(fetchURL, {method: "GET"})
     .then(response => {
@@ -314,7 +367,7 @@ class DBHelper {
     const url = `${DBHelper.DATABASE_REVIEWS}`;
     DBHelper.updateCachedReviews(id, body);
     DBHelper.updatedServer(url, param);
-
+    DBHelper.addPending(id, url, param);
     callback(null, null);
 
   }
@@ -341,7 +394,7 @@ class DBHelper {
   static catchOffline(response, url, param){
     if (response.status >= 400){
       console.log(`Add update to pending queue.`)
-      DBHelper.addPending(url, param);
+      //DBHelper.addPending(url, param);
       return;
     }else{
     return response;
@@ -349,3 +402,6 @@ class DBHelper {
   }
 }
 
+window.onload = function() {
+  DBHelper.pushServerfromCache();
+}

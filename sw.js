@@ -29,7 +29,8 @@ self.addEventListener('install', function(event){
             '/js/main.js',
             '/js/idb.js',
             '/js/restaurant_info.js',
-            'data/'
+            'data/',
+            'favicon.ico'
         ]).catch(error => console.log(`Cache error: ${error}`));
         })
     );
@@ -53,35 +54,32 @@ self.addEventListener('activate', function(event){
 });
 
 
+
+
+
 self.addEventListener('fetch', function(event){
     //Don't cache any data from restaurants/reviews
     if (event.request.url.includes("/restaurants/") || event.request.url.includes("/reviews/")) {
+        console.log(`Fetch Event skipped`);
         event.respondWith(fetch(event.request, {cache: "no-store"}));
         return;
     }
-    
-    
+
     event.respondWith(caches
-        .match(event.request, {ignoreSearch: true})
-        .then(function (db_response) {
-        //Returns repsonse if cache is found
-        if (db_response && db_response.type === "basic") {
-            console.log("found in db");
-            return db_response;
-        }
-        
-        return fetch(event.request).then(function (response) {
-            console.log("made a fetch");
-            let responseToCache = response.clone();
-
-            caches
-                .open(reviewCache)
-                .then(function (cache) {
-                    cache.put(event.request, responseToCache);
-                })
+        .match(event.request)
+        .then(db_response => {
+        return (db_response || fetch(event.request)
+        .then(response => {
+        return caches.open(reviewCache).then(cache => {
+                cache.put(event.request, response.clone());
             return response;
-        })
+            });
+        }).catch(error => {
+        return new Response("No internet connection detected.", {
+            status: 404,
+            statusText: "No internet connection detected."
+        });
+        }));
     }));
-})
-
+});
 
