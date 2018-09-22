@@ -84,7 +84,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
-  console.log(`Reached Reviews comment for ${restaurant.name}`);
+  //console.log(`Reached Reviews comment for ${restaurant.name}`);
   // fill reviews
   DBHelper.fetchReviews(restaurant.id, fillReviewsHTML);
   // fillReviewsHTML();
@@ -122,7 +122,7 @@ fillReviewsHTML = (error, reviews) => {
   title.innerHTML = 'Reviews';
   container.appendChild(title);
 
-  console.log(reviews);
+  //console.log(reviews);
   if (!reviews) {
     const noReviews = document.createElement('p');
     noReviews.innerHTML = 'No reviews yet!';

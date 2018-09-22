@@ -105,14 +105,15 @@ class DBHelper {
 
   //Add reviews that are not able to be sent through fetch to the pending queue
   //Functioning properly now, need to look into the push from dead server.
-  static addPending(id, url, param){
+  static addPending(url, param){
+    console.log(`Add pending called.`)
     const dbPromise = idb.open('udacity-restaurants')
     dbPromise.then(db => {
       const tx = db.transaction("pending", "readwrite");
       tx.objectStore("pending")
       .put({
         url: url,
-        data: {param}
+        data: param
       })
       return tx.complete;
     }).then(console.log(`Pending added`))
@@ -124,38 +125,36 @@ class DBHelper {
   static pushServerfromCache(){
     console.log(`Function called.`);
     //Check to see if server is connected
-    // const dbPromise = idb.open('udacity-restaurants')
-    // dbPromise.then(db => {
-    //   if(!db.createObjectStoreNames.length){
-    //     console.log("No Database available.")
-    //     db.close();
-    //     return;
-    //   }
-    
-    // const tx = db.transaction("pending", "readwrite");
-    // tx.objectStore("pending")
-    // .openCursor()
-    // .then(cursor => {
-    //   if (!cursor) {
-    //     console.log(`No data in pending.`)
-    //     return;
-    //   };
-    //   url = cursor.value.data.url;
-    //   param = cursor.value.data.param;
-    //   console.log(`Posting ${param} to ${url}`);
-    // });
-    // fetch(url, param).then(response =>{
-    //   if(!response.ok || !response.redirected){
-    //     return;
-    //     }
-    //   }).then(() => {
-    //     const xr = db.transaction("pending", "readwrite");
-    //     xr.objectStore("pending").openCursor().then(cursor => {
-    //       cursor.delete().then(() => callback();
-    //     })
-    //   })
-    // .catch(e => console.log(`Error Thrown: ${e}`));
-    // });
+    let url;
+    let param;
+    const dbPromise = idb.open('udacity-restaurants')
+    dbPromise.then(db => {
+      const tx = db.transaction("pending", "readwrite");
+      tx.objectStore("pending")
+      .openCursor()
+      .then(cursor => {
+        if (!cursor) {
+          console.log(`No data in pending.`)
+          return;
+        };
+        console.log(cursor);
+        url = cursor.value.data.url;
+        param = cursor.value.data.param;
+        console.log(`Posting ${param} to ${url}`);
+    fetch(url, param).then(response =>{
+      if(!response.ok || !response.redirected){
+        return;
+        }
+      }).then(() => {
+        const xr = db.transaction("pending", "readwrite");
+        xr.objectStore("pending").openCursor().then(cursor => {
+          cursor.delete()
+          .then(() => callback());
+        })
+      })
+    })
+    .catch(e => console.log(`Error Thrown: ${e}`));
+    });
   }
 
   /**
@@ -367,7 +366,7 @@ class DBHelper {
     const url = `${DBHelper.DATABASE_REVIEWS}`;
     DBHelper.updateCachedReviews(id, body);
     DBHelper.updatedServer(url, param);
-    DBHelper.addPending(id, url, param);
+    //DBHelper.addPending(id, url, param);
     callback(null, null);
 
   }
@@ -383,27 +382,39 @@ class DBHelper {
 
   //Send Fetch call to Post or Put
   static updatedServer(url, param){
-    fetch(url, param)
-    .then(DBHelper.catchOffline(url, param))
-    .then(data => data.json())
+    if(!window.navigator.onLine){
+      DBHelper.addPending(url, param);
+      console.log(`Added ${param} to pending to push to ${url}.`);
+      return;
+    }
+    
+    fetch(url, param).then(data => {
+      if(!data.ok){
+        DBHelper.addPending(url, param);
+        console.log(`Network error, added to pending queue`);
+        return;
+      }
+    })
+    //.then(data => data.json())
     //.then(res => console.log(`Request successful with: ${res}`))
     .catch(e => console.log(`Error Thrown; ${e}`));
   }
 
   //Look for error codes in response if Server is offline
-  static catchOffline(response, url, param){
-    if (response.status >= 400){
-      console.log(`Add update to pending queue.`)
-      //DBHelper.addPending(url, param);
-      return;
-    }else{
-    return response;
-    }
-  }
-}
+//   static catchOffline(response, url, param){
+//     if (response.status >= 400){
+//       console.log(`Add update to pending queue.`)
+//       DBHelper.addPending(url, param);
+//       return;
+//     }else{
+//     return response;
+//     }
+//   }
+
+} //End of DB Helper function
 
 window.onload = function() {
-  if(!window.addEventListener('online')){
+  if(!window.navigator.onLine){
     console.log('No internet connection detected.');
     return;
   }
