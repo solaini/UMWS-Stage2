@@ -403,5 +403,10 @@ class DBHelper {
 }
 
 window.onload = function() {
+  if(!window.addEventListener('online')){
+    console.log('No internet connection detected.');
+    return;
+  }
+  console.log(`Network & server active.`);
   DBHelper.pushServerfromCache();
 }
