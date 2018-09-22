@@ -394,22 +394,13 @@ class DBHelper {
         console.log(`Network error, added to pending queue`);
         return;
       }
+      return data.json();
     })
     //.then(data => data.json())
-    //.then(res => console.log(`Request successful with: ${res}`))
+    .then(res => console.log(`Request successful with: ${res}`))
     .catch(e => console.log(`Error Thrown; ${e}`));
   }
 
-  //Look for error codes in response if Server is offline
-//   static catchOffline(response, url, param){
-//     if (response.status >= 400){
-//       console.log(`Add update to pending queue.`)
-//       DBHelper.addPending(url, param);
-//       return;
-//     }else{
-//     return response;
-//     }
-//   }
 
 } //End of DB Helper function
 
