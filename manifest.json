@@ -3,7 +3,7 @@
     "name": "Restaurant Reviews",
     "icons": [
       {
-        "src": "/img/REstaurant.Review - 128kb.png",
+        "src": "/img/Restaurant.Review - 128kb.png",
         "type": "image/png",
         "sizes": "192x192"
       },
@@ -15,7 +15,7 @@
     ],
     "start_url": "/",
     "background_color": "#3397db",
-    "display": "minimal-ui",
+    "display": "standalone",
     "scope": "/reataurants/",
     "theme_color": "#3397db"
   }

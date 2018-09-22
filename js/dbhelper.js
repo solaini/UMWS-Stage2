@@ -122,7 +122,7 @@ class DBHelper {
 
 
   //Update Server from Cache when network is restored
-  static pushServerfromCache(){
+  static pushServerfromCache(callback){
     console.log(`Function called.`);
     //Check to see if server is connected
     let url;
@@ -149,7 +149,7 @@ class DBHelper {
         const xr = db.transaction("pending", "readwrite");
         xr.objectStore("pending").openCursor().then(cursor => {
           cursor.delete()
-          .then(() => callback());
+          .then(() => {callback()});
         })
       })
     })
